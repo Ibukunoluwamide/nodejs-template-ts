@@ -1,0 +1,254 @@
+/* Custom Swagger UI Theme */
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary-color: #64748b;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --background-color: #ffffff;
+  --surface-color: #f8fafc;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+}
+
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --secondary-color: #94a3b8;
+    --background-color: #0f172a;
+    --surface-color: #1e293b;
+    --border-color: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+  }
+}
+
+/* Hide default Swagger topbar */
+.swagger-ui .topbar {
+  display: none !important;
+}
+
+/* Custom header */
+.swagger-ui .info {
+  margin: 20px 0;
+}
+
+.swagger-ui .info .title {
+  color: var(--primary-color) !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+}
+
+.swagger-ui .info .description {
+  color: var(--text-secondary) !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Scheme container styling */
+.swagger-ui .scheme-container {
+  background: var(--surface-color) !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--border-color) !important;
+  margin: 20px 0 !important;
+}
+
+/* Authentication section */
+.swagger-ui .auth-container {
+  background: var(--surface-color) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  padding: 15px !important;
+  margin: 15px 0 !important;
+}
+
+.swagger-ui .auth-btn-wrapper {
+  margin: 10px 0 !important;
+}
+
+.swagger-ui .auth-btn-wrapper .btn {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.swagger-ui .auth-btn-wrapper .btn:hover {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Operation styling */
+.swagger-ui .opblock {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  margin: 15px 0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.swagger-ui .opblock.opblock-post {
+  border-left: 4px solid var(--success-color) !important;
+}
+
+.swagger-ui .opblock.opblock-get {
+  border-left: 4px solid var(--primary-color) !important;
+}
+
+.swagger-ui .opblock.opblock-put {
+  border-left: 4px solid var(--warning-color) !important;
+}
+
+.swagger-ui .opblock.opblock-delete {
+  border-left: 4px solid var(--error-color) !important;
+}
+
+.swagger-ui .opblock-summary {
+  padding: 15px 20px !important;
+  background: var(--background-color) !important;
+}
+
+.swagger-ui .opblock-summary-description {
+  color: var(--text-secondary) !important;
+}
+
+/* Tags styling */
+.swagger-ui .opblock-tag {
+  border-bottom: 2px solid var(--border-color) !important;
+  margin: 20px 0 10px 0 !important;
+  padding-bottom: 10px !important;
+}
+
+.swagger-ui .opblock-tag small {
+  background: var(--primary-color) !important;
+  color: white !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+}
+
+/* Button styling */
+.swagger-ui .btn {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.swagger-ui .btn.execute {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.swagger-ui .btn.execute:hover {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+/* Response styling */
+.swagger-ui .responses-inner h4,
+.swagger-ui .responses-inner h5 {
+  color: var(--text-primary) !important;
+}
+
+.swagger-ui .response-col_status {
+  font-weight: 600 !important;
+}
+
+/* Model styling */
+.swagger-ui .model-box {
+  background: var(--surface-color) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+}
+
+/* Code blocks */
+.swagger-ui .highlight-code {
+  background: var(--surface-color) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+}
+
+/* Filter input */
+.swagger-ui .filter-container input {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  background: var(--background-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.swagger-ui .filter-container input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Loading animation */
+.swagger-ui .loading-container {
+  text-align: center !important;
+  padding: 40px !important;
+}
+
+.swagger-ui .loading-container::after {
+  content: "Loading API Documentation..." !important;
+  color: var(--text-secondary) !important;
+  font-size: 1.1rem !important;
+}
+
+/* Custom scrollbar */
+.swagger-ui ::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+.swagger-ui ::-webkit-scrollbar-track {
+  background: var(--surface-color) !important;
+}
+
+.swagger-ui ::-webkit-scrollbar-thumb {
+  background: var(--border-color) !important;
+  border-radius: 4px !important;
+}
+
+.swagger-ui ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted) !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .swagger-ui .info .title {
+    font-size: 2rem !important;
+  }
+  
+  .swagger-ui .opblock-summary {
+    padding: 12px 15px !important;
+  }
+  
+  .swagger-ui .scheme-container {
+    padding: 15px !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .swagger-ui .topbar,
+  .swagger-ui .scheme-container,
+  .swagger-ui .auth-container {
+    display: none !important;
+  }
+  
+  .swagger-ui .opblock {
+    break-inside: avoid !important;
+    margin: 10px 0 !important;
+  }
+}
