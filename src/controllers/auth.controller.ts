@@ -1,5 +1,4 @@
 import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
-import SessionModel from "../models/session.model";
 import {
   continueWithGoogleUser,
   createAccount,
@@ -10,12 +9,6 @@ import {
   verifyEmail,
 } from "../services/auth.service";
 import appAssert from "../utils/appAssert";
-import {
-  clearAuthCookies,
-  getAccessTokenCookieOptions,
-  getRefreshTokenCookieOptions,
-  setAuthCookies,
-} from "../utils/cookies";
 import { verifyToken } from "../utils/jwt";
 import catchErrors from "../utils/catchErrors";
 import {
@@ -33,9 +26,14 @@ export const registerHandler = catchErrors(async (req, res) => {
     userAgent: req.headers["user-agent"],
   });
   const { user, accessToken, refreshToken } = await createAccount(request);
-  return setAuthCookies({ res, accessToken, refreshToken })
-    .status(CREATED)
-    .json({message: "User registered successfully", user});
+  
+  // Return tokens in JSON response
+  return res.status(CREATED).json({
+    message: "User registered successfully",
+    user,
+    accessToken,
+    refreshToken,
+  });
 });
 
 export const loginHandler = catchErrors(async (req, res) => {
@@ -45,10 +43,12 @@ export const loginHandler = catchErrors(async (req, res) => {
   });
   const { accessToken, refreshToken } = await loginUser(request);
 
-  // set cookies
-  return setAuthCookies({ res, accessToken, refreshToken })
-    .status(OK)
-    .json({ message: "Login successful" });
+  // Return tokens in JSON response
+  return res.status(OK).json({ 
+    message: "Login successful",
+    accessToken,
+    refreshToken,
+  });
 });
 export const continueWithGoogleHandler = catchErrors(async (req, res) => {
   const request = continueWithGoogleSchema.parse({
@@ -62,13 +62,13 @@ export const continueWithGoogleHandler = catchErrors(async (req, res) => {
     // Log successful Google authentication
     console.log(`Google authentication successful for user: ${user.email}`);
 
-    // set cookies
-    return setAuthCookies({ res, accessToken, refreshToken })
-      .status(OK)
-      .json({ 
-        message: "Successfully signed in with Google",
-        user 
-      });
+    // Return tokens in JSON response
+    return res.status(OK).json({ 
+      message: "Successfully signed in with Google",
+      user,
+      accessToken,
+      refreshToken,
+    });
   } catch (error: any) {
     // Log failed Google authentication attempts
     console.error(`Google authentication failed: ${error.message}`, {
@@ -80,34 +80,24 @@ export const continueWithGoogleHandler = catchErrors(async (req, res) => {
 });
 
 export const logoutHandler = catchErrors(async (req, res) => {
-  const accessToken = req.cookies.accessToken as string | undefined;
-  const { payload } = verifyToken(accessToken || "");
-
-  if (payload) {
-    // remove session from db
-    await SessionModel.findByIdAndDelete(payload.sessionId);
-  }
-
-  // clear cookies
-  return clearAuthCookies(res)
-    .status(OK)
-    .json({ message: "Logout successful" });
+  return res.status(OK).json({ message: "Logout successful" });
 });
 
 export const refreshHandler = catchErrors(async (req, res) => {
-  const refreshToken = req.cookies.refreshToken as string | undefined;
+  // Accept refresh token from request body instead of cookies
+  const { refreshToken } = req.body;
   appAssert(refreshToken, UNAUTHORIZED, "Missing refresh token");
 
   const { accessToken, newRefreshToken } = await refreshUserAccessToken(
     refreshToken
   );
-  if (newRefreshToken) {
-    res.cookie("refreshToken", newRefreshToken, getRefreshTokenCookieOptions());
-  }
-  return res
-    .status(OK)
-    .cookie("accessToken", accessToken, getAccessTokenCookieOptions())
-    .json({ message: "Access token refreshed" });
+  
+  // Return new tokens in JSON response
+  return res.status(OK).json({ 
+    message: "Access token refreshed",
+    accessToken,
+    refreshToken: newRefreshToken || refreshToken,
+  });
 });
 
 export const verifyEmailHandler = catchErrors(async (req, res) => {
@@ -131,7 +121,5 @@ export const resetPasswordHandler = catchErrors(async (req, res) => {
 
   await resetPassword(request);
 
-  return clearAuthCookies(res)
-    .status(OK)
-    .json({ message: "Password was reset successfully" });
+  return res.status(OK).json({ message: "Password was reset successfully" });
 });

@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import path from "path";
 import fs from "fs";
@@ -11,7 +10,7 @@ import authenticate from "./middleware/authenticate";
 import { protectApiDocs, apiDocsCors } from "./middleware/apiDocs";
 import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
-import sessionRoutes from "./routes/session.route";
+// import sessionRoutes from "./routes/session.route";
 import { swaggerSpec } from "./config/swagger";
 import { APP_ORIGIN, NODE_ENV, PORT } from "./constants/env";
 
@@ -26,7 +25,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(cookieParser());
 
 /**
  * @swagger
@@ -84,7 +82,7 @@ app.use("/auth", authRoutes);
 
 // protected routes
 app.use("/user", authenticate, userRoutes);
-app.use("/sessions", authenticate, sessionRoutes);
+// app.use("/sessions", authenticate, sessionRoutes);
 
 // error handler
 app.use(errorHandler);

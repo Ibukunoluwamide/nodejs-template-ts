@@ -8,28 +8,20 @@ import {
   UNPROCESSABLE_CONTENT,
 } from "../constants/http";
 import VerificationCodeType from "../constants/verificationCodeType";
-import SessionModel, { SessionDocument } from "../models/session.model";
 import UserModel, { UserDocument } from "../models/user.model";
 import VerificationCodeModel from "../models/verificationCode.model";
 import appAssert from "../utils/appAssert";
 import { hashValue } from "../utils/bcrypt";
 import {
-  ONE_DAY_MS,
   fiveMinutesAgo,
   oneHourFromNow,
   oneYearFromNow,
-  thirtyDaysFromNow,
 } from "../utils/date";
 import {
   getPasswordResetTemplate,
   getVerifyEmailTemplate,
 } from "../utils/emailTemplates";
-import {
-  RefreshTokenPayload,
-  refreshTokenSignOptions,
-  signToken,
-  verifyToken,
-} from "../utils/jwt";
+import { RefreshTokenPayload, refreshTokenSignOptions, signToken, verifyToken } from "../utils/jwt";
 import { sendMail } from "../utils/sendMail";
 import { verifyGoogleToken, GoogleTokenPayload } from "../utils/googleAuth";
 import { checkRateLimit } from "../utils/rateLimit";
@@ -71,21 +63,15 @@ export const createAccount = async (data: CreateAccountParams) => {
   // ignore email errors for now
   if (error) console.error(error);
 
-  // create session
-  const session = await SessionModel.create({
-    userId,
-    userAgent: data.userAgent,
-  });
-
+  // Stateless tokens (no sessions)
   const refreshToken = signToken(
     {
-      sessionId: session._id,
+      userId,
     },
     refreshTokenSignOptions
   );
   const accessToken = signToken({
     userId,
-    sessionId: session._id,
   });
   return {
     user: user.omitPassword(),
@@ -111,18 +97,12 @@ export const loginUser = async ({
   appAssert(isValid, UNAUTHORIZED, "Invalid email or password");
 
   const userId = user._id;
-  const session = await SessionModel.create({
-    userId,
-    userAgent,
-  });
-
   const sessionInfo: RefreshTokenPayload = {
-    sessionId: session._id,
+    userId,
   };
 
   const refreshToken = signToken(sessionInfo, refreshTokenSignOptions);
   const accessToken = signToken({
-    ...sessionInfo,
     userId,
   });
   return {
@@ -161,15 +141,7 @@ export const continueWithGoogleUser = async ({
 
   if (existingUser) {
     // Update existing user with Google ID if not already set
-    if (!existingUser.googleId) {
-      existingUser.googleId = googlePayload.sub;
-      existingUser.provider = 'google';
-      // If Google email is verified, mark user as verified
-      if (googlePayload.email_verified) {
-        existingUser.verified = true;
-      }
-      await existingUser.save();
-    }
+  
     user = existingUser;
   } else {
     // Create new user
@@ -177,7 +149,6 @@ export const continueWithGoogleUser = async ({
       firstName: googlePayload.given_name || 'User',
       lastName: googlePayload.family_name || 'User',
       email: googlePayload.email,
-      provider: 'google',
       googleId: googlePayload.sub,
       profileImage: googlePayload.picture || null,
       verified: googlePayload.email_verified, // Auto-verify if Google email is verified
@@ -185,21 +156,14 @@ export const continueWithGoogleUser = async ({
   }
 
   // Check if user account is active
-  appAssert(user.accountStatus === 'active', UNAUTHORIZED, 'Account is not active');
 
   const userId = user._id;
-  const session = await SessionModel.create({
-    userId,
-    userAgent,
-  });
-
   const sessionInfo: RefreshTokenPayload = {
-    sessionId: session._id,
+    userId,
   };
 
   const refreshToken = signToken(sessionInfo, refreshTokenSignOptions);
   const accessToken = signToken({
-    ...sessionInfo,
     userId,
   });
 
@@ -240,34 +204,13 @@ export const refreshUserAccessToken = async (refreshToken: string) => {
   });
   appAssert(payload, UNAUTHORIZED, "Invalid refresh token");
 
-  const session = await SessionModel.findById(payload.sessionId);
-  const now = Date.now();
-  appAssert(
-    session && session.expiresAt.getTime() > now,
-    UNAUTHORIZED,
-    "Session expired"
-  );
+  // Ensure the user still exists and is active
+  const user = await UserModel.findById(payload.userId);
+  appAssert(user, UNAUTHORIZED, "User not found");
 
-  // refresh the session if it expires in the next 24hrs
-  const sessionNeedsRefresh = session.expiresAt.getTime() - now <= ONE_DAY_MS;
-  if (sessionNeedsRefresh) {
-    session.expiresAt = thirtyDaysFromNow();
-    await session.save();
-  }
-
-  const newRefreshToken = sessionNeedsRefresh
-    ? signToken(
-        {
-          sessionId: session._id,
-        },
-        refreshTokenSignOptions
-      )
-    : undefined;
-
-  const accessToken = signToken({
-    userId: session.userId,
-    sessionId: session._id,
-  });
+  // Optionally rotate refresh token each refresh for better security
+  const newRefreshToken = signToken({ userId: user._id }, refreshTokenSignOptions);
+  const accessToken = signToken({ userId: user._id });
 
   return {
     accessToken,
@@ -349,8 +292,7 @@ export const resetPassword = async ({
 
   await validCode.deleteOne();
 
-  // delete all sessions
-  await SessionModel.deleteMany({ userId: validCode.userId });
+  // Stateless JWTs: no server-side sessions to delete
 
   return { user: updatedUser.omitPassword() };
 };

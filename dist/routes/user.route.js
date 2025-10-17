@@ -1,8 +1,8 @@
-import { Router } from "express";
-import { getUserHandler } from "../controllers/user.controller";
-
-const userRoutes = Router();
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const user_controller_1 = require("../controllers/user.controller");
+const userRoutes = (0, express_1.Router)();
 /**
  * @swagger
  * /user:
@@ -10,7 +10,7 @@ const userRoutes = Router();
  *     summary: Get current user profile
  *     tags: [User]
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: User profile retrieved successfully
@@ -25,6 +25,5 @@ const userRoutes = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-userRoutes.get("/", getUserHandler);
-
-export default userRoutes;
+userRoutes.get("/", user_controller_1.getUserHandler);
+exports.default = userRoutes;

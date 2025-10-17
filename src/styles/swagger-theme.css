@@ -1,4 +1,4 @@
-/* Custom Swagger UI Theme */
+/* 🌟 Custom Swagger UI Light Theme */
 :root {
   --primary-color: #2563eb;
   --primary-hover: #1d4ed8;
@@ -12,21 +12,6 @@
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
-}
-
-/* Dark mode variables */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-color: #3b82f6;
-    --primary-hover: #2563eb;
-    --secondary-color: #94a3b8;
-    --background-color: #0f172a;
-    --surface-color: #1e293b;
-    --border-color: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-  }
 }
 
 /* Hide default Swagger topbar */
@@ -90,7 +75,7 @@
   transform: translateY(-1px) !important;
 }
 
-/* Operation styling */
+/* Operation blocks */
 .swagger-ui .opblock {
   border: 1px solid var(--border-color) !important;
   border-radius: 8px !important;
@@ -194,19 +179,7 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
 }
 
-/* Loading animation */
-.swagger-ui .loading-container {
-  text-align: center !important;
-  padding: 40px !important;
-}
-
-.swagger-ui .loading-container::after {
-  content: "Loading API Documentation..." !important;
-  color: var(--text-secondary) !important;
-  font-size: 1.1rem !important;
-}
-
-/* Custom scrollbar */
+/* Scrollbar styling */
 .swagger-ui ::-webkit-scrollbar {
   width: 8px !important;
 }
@@ -229,11 +202,11 @@
   .swagger-ui .info .title {
     font-size: 2rem !important;
   }
-  
+
   .swagger-ui .opblock-summary {
     padding: 12px 15px !important;
   }
-  
+
   .swagger-ui .scheme-container {
     padding: 15px !important;
   }
@@ -246,7 +219,7 @@
   .swagger-ui .auth-container {
     display: none !important;
   }
-  
+
   .swagger-ui .opblock {
     break-inside: avoid !important;
     margin: 10px 0 !important;

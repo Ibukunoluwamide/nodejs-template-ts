@@ -6,7 +6,19 @@ import { verifyToken } from "../utils/jwt";
 
 // wrap with catchErrors() if you need this to be async
 const authenticate: RequestHandler = (req, res, next) => {
-  const accessToken = req.cookies.accessToken as string | undefined;
+  // Extract token from Authorization header (Bearer token format)
+  const authHeader = req.headers.authorization;
+  
+  appAssert(
+    authHeader && authHeader.startsWith("Bearer "),
+    UNAUTHORIZED,
+    "Authorization header with Bearer token required",
+    AppErrorCode.InvalidAccessToken
+  );
+
+  // Extract the token after "Bearer "
+  const accessToken = authHeader.substring(7);
+  
   appAssert(
     accessToken,
     UNAUTHORIZED,
@@ -23,7 +35,6 @@ const authenticate: RequestHandler = (req, res, next) => {
   );
 
   req.userId = payload.userId;
-  req.sessionId = payload.sessionId;
   next();
 };
 

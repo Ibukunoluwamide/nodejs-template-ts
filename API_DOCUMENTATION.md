@@ -47,9 +47,8 @@ This project includes a comprehensive, interactive API documentation system buil
 ### User Management (`/user`)
 - `GET /user` - Get current user profile (Protected)
 
-### Session Management (`/sessions`)
-- `GET /sessions` - Get all active sessions (Protected)
-- `DELETE /sessions/:id` - Delete a specific session (Protected)
+### Session Management
+- Not applicable. Authentication is stateless via JWT; no server-side sessions.
 
 ### Health Check
 - `GET /` - Health check endpoint
@@ -58,14 +57,10 @@ This project includes a comprehensive, interactive API documentation system buil
 
 The API supports multiple authentication methods:
 
-### Cookie Authentication (Recommended)
-- Access and refresh tokens are automatically stored in HTTP-only cookies
-- No manual token management required
-- Automatically handled by the browser
-
-### Bearer Token Authentication
-- For API clients that prefer token-based authentication
-- Format: `Authorization: Bearer <your-token>`
+### Bearer Token Authentication (Recommended)
+- **Use JWT access tokens** in the `Authorization` header
+- **Format**: `Authorization: Bearer <accessToken>`
+- **Refresh flow**: obtain a new access token via `POST /auth/refresh` with a valid `refreshToken`
 
 ## 🛠️ Development
 

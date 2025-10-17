@@ -1,17 +1,8 @@
-import { Router } from "express";
-import {
-  sendPasswordResetHandler,
-  loginHandler,
-  logoutHandler,
-  refreshHandler,
-  registerHandler,
-  resetPasswordHandler,
-  verifyEmailHandler,
-  continueWithGoogleHandler,
-} from "../controllers/auth.controller";
-
-const authRoutes = Router();
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_controller_1 = require("../controllers/auth.controller");
+const authRoutes = (0, express_1.Router)();
 /**
  * @swagger
  * /auth/register:
@@ -76,8 +67,7 @@ const authRoutes = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-authRoutes.post("/register", registerHandler);
-
+authRoutes.post("/register", auth_controller_1.registerHandler);
 /**
  * @swagger
  * /auth/login:
@@ -127,53 +117,7 @@ authRoutes.post("/register", registerHandler);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-authRoutes.post("/login", loginHandler);
-
-/**
- * @swagger
- * /auth/refresh:
- *   post:
- *     summary: Refresh access token using refresh token
- *     tags: [Authentication]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - refreshToken
- *             properties:
- *               refreshToken:
- *                 type: string
- *                 description: JWT refresh token
- *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *     responses:
- *       200:
- *         description: Access token refreshed
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Access token refreshed
- *                 accessToken:
- *                   type: string
- *                   description: New JWT access token
- *                 refreshToken:
- *                   type: string
- *                   description: New refresh token if rotated
- *       401:
- *         description: Missing or invalid refresh token
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-authRoutes.post("/refresh", refreshHandler);
-
+authRoutes.post("/login", auth_controller_1.loginHandler);
 /**
  * @swagger
  * /auth/google:
@@ -227,15 +171,58 @@ authRoutes.post("/refresh", refreshHandler);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-authRoutes.post("/google", continueWithGoogleHandler);
-
-
-
+authRoutes.post("/google", auth_controller_1.continueWithGoogleHandler);
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh access token using refresh token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: JWT refresh token
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *     responses:
+ *       200:
+ *         description: Access token refreshed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access token refreshed
+ *                 accessToken:
+ *                   type: string
+ *                   description: New JWT access token
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token (new or same)
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       401:
+ *         description: Invalid or missing refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+authRoutes.post("/refresh", auth_controller_1.refreshHandler);
 /**
  * @swagger
  * /auth/logout:
  *   post:
- *     summary: Logout user (client-side token discard)
+ *     summary: Logout user and invalidate session
  *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
@@ -247,8 +234,7 @@ authRoutes.post("/google", continueWithGoogleHandler);
  *             schema:
  *               $ref: '#/components/schemas/SuccessResponse'
  */
-authRoutes.post("/logout", logoutHandler);
-
+authRoutes.post("/logout", auth_controller_1.logoutHandler);
 /**
  * @swagger
  * /auth/email/verify/{code}:
@@ -277,8 +263,7 @@ authRoutes.post("/logout", logoutHandler);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-authRoutes.get("/email/verify/:code", verifyEmailHandler);
-
+authRoutes.get("/email/verify/:code", auth_controller_1.verifyEmailHandler);
 /**
  * @swagger
  * /auth/password/forgot:
@@ -312,8 +297,7 @@ authRoutes.get("/email/verify/:code", verifyEmailHandler);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-authRoutes.post("/password/forgot", sendPasswordResetHandler);
-
+authRoutes.post("/password/forgot", auth_controller_1.sendPasswordResetHandler);
 /**
  * @swagger
  * /auth/password/reset:
@@ -351,6 +335,5 @@ authRoutes.post("/password/forgot", sendPasswordResetHandler);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-authRoutes.post("/password/reset", resetPasswordHandler);
-
-export default authRoutes;
+authRoutes.post("/password/reset", auth_controller_1.resetPasswordHandler);
+exports.default = authRoutes;

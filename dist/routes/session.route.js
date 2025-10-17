@@ -1,11 +1,8 @@
-import { Router } from "express";
-import {
-  deleteSessionHandler,
-  getSessionsHandler,
-} from "../controllers/session.controller";
-
-const sessionRoutes = Router();
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const session_controller_1 = require("../controllers/session.controller");
+const sessionRoutes = (0, express_1.Router)();
 /**
  * @swagger
  * /sessions:
@@ -30,8 +27,7 @@ const sessionRoutes = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-sessionRoutes.get("/", getSessionsHandler);
-
+sessionRoutes.get("/", session_controller_1.getSessionsHandler);
 /**
  * @swagger
  * /sessions/{id}:
@@ -68,6 +64,5 @@ sessionRoutes.get("/", getSessionsHandler);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-sessionRoutes.delete("/:id", deleteSessionHandler);
-
-export default sessionRoutes;
+sessionRoutes.delete("/:id", session_controller_1.deleteSessionHandler);
+exports.default = sessionRoutes;
