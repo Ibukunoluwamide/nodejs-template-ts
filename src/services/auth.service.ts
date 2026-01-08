@@ -5,26 +5,22 @@ import {
   NOT_FOUND,
   TOO_MANY_REQUESTS,
   UNAUTHORIZED,
-  UNPROCESSABLE_CONTENT,
 } from "../constants/http";
 import VerificationCodeType from "../constants/verificationCodeType";
-import UserModel, { UserDocument } from "../models/user.model";
+import UserModel from "../models/user.model";
 import VerificationCodeModel from "../models/verificationCode.model";
 import appAssert from "../utils/appAssert";
 import { hashValue } from "../utils/bcrypt";
 import {
   fiveMinutesAgo,
   oneHourFromNow,
-  oneYearFromNow,
 } from "../utils/date";
 import {
   getPasswordResetTemplate,
   getVerifyEmailTemplate,
 } from "../utils/emailTemplates";
-import { RefreshTokenPayload, refreshTokenSignOptions, signToken, verifyToken } from "../utils/jwt";
+import { RefreshTokenPayload, signToken} from "../utils/jwt";
 import { sendMail } from "../utils/sendMail";
-import { verifyGoogleToken, GoogleTokenPayload } from "../utils/googleAuth";
-import { checkRateLimit } from "../utils/rateLimit";
 
 type CreateAccountParams = {
   firstName: string;
@@ -64,19 +60,13 @@ export const createAccount = async (data: CreateAccountParams) => {
   if (error) console.error(error);
 
   // Stateless tokens (no sessions)
-  const refreshToken = signToken(
-    {
-      userId,
-    },
-    refreshTokenSignOptions
-  );
+
   const accessToken = signToken({
     userId,
   });
   return {
     user: user.omitPassword(),
     accessToken,
-    refreshToken,
   };
 };
 
@@ -101,78 +91,15 @@ export const loginUser = async ({
     userId,
   };
 
-  const refreshToken = signToken(sessionInfo, refreshTokenSignOptions);
   const accessToken = signToken({
     userId,
   });
   return {
     user: user.omitPassword(),
     accessToken,
-    refreshToken,
   };
 };
-type ContinueWithGoogleParams = {
-  idToken: string;
-  userAgent?: string;
-};
 
-export const continueWithGoogleUser = async ({
-  idToken,
-  userAgent,
-}: ContinueWithGoogleParams) => {
-  // Rate limiting based on IP or user agent
-  const rateLimitKey = userAgent || 'unknown';
-  checkRateLimit(rateLimitKey, 5, 15 * 60 * 1000); // 5 attempts per 15 minutes
-
-  // Verify Google ID token
-  const googlePayload: GoogleTokenPayload = await verifyGoogleToken(idToken);
-  
-  // Additional security checks
-  appAssert(googlePayload.email_verified, UNAUTHORIZED, 'Google email not verified');
-  appAssert(googlePayload.email, UNAUTHORIZED, 'No email in Google token');
-
-  let user;
-  const existingUser = await UserModel.findOne({
-    $or: [
-      { email: googlePayload.email },
-      { googleId: googlePayload.sub }
-    ]
-  });
-
-  if (existingUser) {
-    // Update existing user with Google ID if not already set
-  
-    user = existingUser;
-  } else {
-    // Create new user
-    user = await UserModel.create({
-      firstName: googlePayload.given_name || 'User',
-      lastName: googlePayload.family_name || 'User',
-      email: googlePayload.email,
-      googleId: googlePayload.sub,
-      profileImage: googlePayload.picture || null,
-      verified: googlePayload.email_verified, // Auto-verify if Google email is verified
-    });
-  }
-
-  // Check if user account is active
-
-  const userId = user._id;
-  const sessionInfo: RefreshTokenPayload = {
-    userId,
-  };
-
-  const refreshToken = signToken(sessionInfo, refreshTokenSignOptions);
-  const accessToken = signToken({
-    userId,
-  });
-
-  return {
-    user: user.omitPassword(),
-    accessToken,
-    refreshToken,
-  };
-};
 
 export const verifyEmail = async (code: string) => {
   const validCode = await VerificationCodeModel.findOne({
@@ -195,26 +122,6 @@ export const verifyEmail = async (code: string) => {
 
   return {
     user: updatedUser.omitPassword(),
-  };
-};
-
-export const refreshUserAccessToken = async (refreshToken: string) => {
-  const { payload } = verifyToken<RefreshTokenPayload>(refreshToken, {
-    secret: refreshTokenSignOptions.secret,
-  });
-  appAssert(payload, UNAUTHORIZED, "Invalid refresh token");
-
-  // Ensure the user still exists and is active
-  const user = await UserModel.findById(payload.userId);
-  appAssert(user, UNAUTHORIZED, "User not found");
-
-  // Optionally rotate refresh token each refresh for better security
-  const newRefreshToken = signToken({ userId: user._id }, refreshTokenSignOptions);
-  const accessToken = signToken({ userId: user._id });
-
-  return {
-    accessToken,
-    newRefreshToken,
   };
 };
 

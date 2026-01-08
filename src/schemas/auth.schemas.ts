@@ -9,10 +9,6 @@ export const loginSchema = z.object({
   password: passwordSchema,
   userAgent: z.string().optional(),
 });
-export const continueWithGoogleSchema = z.object({
-  idToken: z.string().min(1, "Google ID token is required"),
-  userAgent: z.string().optional(),
-});
 
 export const registerSchema = loginSchema
   .extend({

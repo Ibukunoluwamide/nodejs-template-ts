@@ -208,53 +208,7 @@
 			],
 			"description": "Contains all user related endpoints."
 		},
-		{
-			"name": "session",
-			"item": [
-				{
-					"name": "sessions",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/sessions",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"sessions"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "sessions/:id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/sessions/:id",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"sessions",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "662c76ab1161a09656b81a94"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"description": "Contains all session related endpoints."
-		},
+	
 		{
 			"name": "health check",
 			"protocolProfileBehavior": {

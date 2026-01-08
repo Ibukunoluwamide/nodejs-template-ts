@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 import { compareValue, hashValue } from "../utils/bcrypt";
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin"
+}
 
 export interface UserDocument extends mongoose.Document {
   firstName: string;
@@ -7,6 +11,7 @@ export interface UserDocument extends mongoose.Document {
   email: string;
   password: string;
   verified: boolean;
+  role: UserRole,
   createdAt?: Date;
   updatedAt?: Date;
   comparePassword(val: string): Promise<boolean>;
@@ -23,6 +28,7 @@ const userSchema = new mongoose.Schema<UserDocument>(
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    role: { type: String, UserRole, default: UserRole.USER},
     password: { type: String},
     verified: { type: Boolean, required: true, default: false },
   },

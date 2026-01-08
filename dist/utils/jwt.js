@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyToken = exports.signToken = exports.refreshTokenSignOptions = void 0;
+exports.verifyToken = exports.signToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const env_1 = require("../constants/env");
 const defaults = {
@@ -12,10 +12,6 @@ const defaults = {
 const accessTokenSignOptions = {
     expiresIn: "15m",
     secret: env_1.JWT_SECRET,
-};
-exports.refreshTokenSignOptions = {
-    expiresIn: "30d",
-    secret: env_1.JWT_REFRESH_SECRET,
 };
 const signToken = (payload, options) => {
     const { secret, ...signOpts } = options || accessTokenSignOptions;

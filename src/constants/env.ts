@@ -13,7 +13,5 @@ export const PORT = getEnv("PORT", "4004");
 export const MONGO_URI = getEnv("MONGO_URI");
 export const APP_ORIGIN = getEnv("APP_ORIGIN");
 export const JWT_SECRET = getEnv("JWT_SECRET");
-export const JWT_REFRESH_SECRET = getEnv("JWT_REFRESH_SECRET");
 export const EMAIL_SENDER = getEnv("EMAIL_SENDER");
 export const RESEND_API_KEY = getEnv("RESEND_API_KEY");
-export const GOOGLE_CLIENT_ID = getEnv("GOOGLE_CLIENT_ID", "dummy_client_id_for_development");

@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const zod_1 = require("zod");
 const AppError_1 = __importDefault(require("../utils/AppError"));
 const http_1 = require("../constants/http");
-const cookies_1 = require("../utils/cookies");
 const handleZodError = (res, error) => {
     const errors = error.issues.map((err) => ({
         path: err.path.join("."),
@@ -25,9 +24,6 @@ const handleAppError = (res, error) => {
 };
 const errorHandler = (error, req, res, next) => {
     console.log(`PATH ${req.path}`, error);
-    if (req.path === cookies_1.REFRESH_PATH) {
-        (0, cookies_1.clearAuthCookies)(res);
-    }
     if (error instanceof zod_1.z.ZodError) {
         return handleZodError(res, error);
     }
